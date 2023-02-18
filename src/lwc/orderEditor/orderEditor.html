@@ -12,13 +12,12 @@
 			placeholder="Select Family"
 			options={options}
 			required="false"
-			validity="true"
 			onchange={handleChange} ></lightning-combobox>
 	<br/>
 
 	<lightning-input type="text" label="Enter Search key" onchange={handleSearch}></lightning-input>
 	<hr/>
-	<h3>Total Amount: £123.32</h3>
+	<h3>Total Amount: £ {totalAmount}</h3>
 
 	<div style="height: 300px;">
 		<lightning-datatable
@@ -32,6 +31,7 @@
 				class="productDataTable"
 				oncellchange= {handleOnCellChange}
 				onrowaction={handleOnRowAction}
+				draft-values={draftFieldValues}
 				columns={columns}>
 		</lightning-datatable>
 	</div>
@@ -40,7 +40,6 @@
 	<lightning-button variant="brand-outline" label= "Save as Draft" title="Save as Draft" onclick={handleDraft}></lightning-button> &nbsp;
 	<lightning-button variant="brand" label="Save" title="Save" onclick={handleSave}></lightning-button> &nbsp;
 	<lightning-button variant="brand" label="Add Promotion" title="Add Promotion" onclick={showPromotionModel}></lightning-button>
-
 </div>
 
 

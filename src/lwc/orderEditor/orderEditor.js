@@ -30,8 +30,14 @@ export default class orderEditor extends LightningElement {
 	searchToken = '';
 	family = '';
 	wiredDataResult;
-	@track totalAmount = 560.00;
+	@track totalAmount = 0.00;
 	@api firstName = 'John Doe';
+	selectedRowData;
+	totalOrderQty=[];
+	selectedOrders =[]
+
+
+	 draftFieldValues = [];
 
 	//promotion
 	name;
@@ -75,55 +81,95 @@ export default class orderEditor extends LightningElement {
 		this.searchToken = event.target.value;
 		this.makeProductDumpCall();
 	}
-    handleSave(event){
-		var updatedRecords = this.template.querySelector("lightning-datatable").draftValues;
+
+handleSave(event){
+	 const updatedValues = this.template.querySelector("lightning-datatable").draftValues;
+		console.log('#draftFieldValues:'+ JSON.stringify(updatedValues));
 		var newRow;
-		var rowsToSave = this.data.map(row => {
+		this.selectedRowData = this.data.map(row => {
 			console.log('row:'+ JSON.stringify(row));
-			const changes = updatedRecords.find(changedElement => changedElement.Id  === row.Id);
+			const changes = updatedValues.find(changedElement => changedElement.Id  === row.Id);
 
 			if(changes !== undefined || changes !== null){
 			  newRow = Object.assign({}, row);
 			}
-			console.log('#newRow:' + newRow)
-			console.log('#changes:' + changes)
 			if(changes)
 			{
 				return Object.assign(newRow, changes)
 			}
 		});
 
-		console.log('#rowsToSave:'+ JSON.stringify(rowsToSave));
-		productService({jsonInput:JSON.stringify(rowsToSave),accountId:this.recordId}).then(result => {
-			if(result){
-				console.log('result:'+result);
-				console.log('#this.wiredDataResult:'+this.wiredDataResult);
+
+		productService({jsonInput:JSON.stringify(this.selectedRowData),accountId:this.recordId}).then(result =>{
+		if(result){
 				this.showSuccessToast();
+				this.template.querySelector("lightning-datatable").draftValues = [];
+
 			}else if(error){
-				 console.log('error:'+error);
-				 this.showErrorToast(error);
+				console.log('error:'+error);
+				this.showErrorToast(error);
 			}
-		return refreshApex(this.wiredDataResult);
-		})
+  		})
+  		}
 
-       // console.log('#selectedRows1:' + JSON.stringify(selectedRows1));
-    }
+		makeProductDumpCall(){
+			productsDump({family:this.selectedFamily, searchToken : this.searchToken}).then(result => {
+					this.data = result.map(item=>{
+					let iconName = item.AvailableStock <= 5  ? "utility:down" : item.AvailableStock > 5 &&  item.AvailableStock <= 15 ? "utility:left": "utility:up";
+					//  console.log('#iconName:'+iconName);
+					return {...item, "iconName": iconName }
+				});
+			}).catch(error => {
+				console.log('Error1:' + JSON.stringify(error));
+			})
+		}
 
-	makeProductDumpCall(){
-	productsDump({family:this.selectedFamily, searchToken : this.searchToken}).then(result => {
-		this.data = result.map(item=>{
-			let iconName = item.AvailableStock <= 5  ? "utility:down" : item.AvailableStock > 5 &&  item.AvailableStock <= 15 ? "utility:left": "utility:up";
-			//  console.log('#iconName:'+iconName);
-			return {...item, "iconName": iconName }
-		});
-		}).catch(error => {
-		console.log('Error1:' + JSON.stringify(error));
-		})
-	}
+		parseToObjectCollection(arrayOfArrays) {
+          // Create an empty object to store the parsed data
+          const objectCollection = {};
+
+          // Loop through each inner array
+          arrayOfArrays.forEach(innerArray => {
+            // Loop through each object in the inner array
+            innerArray.forEach(obj => {
+              // Loop through each key-value pair in the object
+              Object.entries(obj).forEach(([key, value]) => {
+                // If the key doesn't exist in the object collection yet, create a new array for it
+                if (!objectCollection[key]) {
+                  objectCollection[key] = [];
+                }
+                // Push the value into the array for the current key
+                objectCollection[key].push(value);
+              });
+            });
+          });
+
+          // Return the object collection
+          return objectCollection;
+        }
+
 
 	handleOnCellChange(event){
+
 	   console.log('event.detail.value:'+ JSON.stringify(event.detail.draftValues));
-	   console.log('event.target.dataset.id:'+event.target.dataset.id)
+	   let selectedOrderQty = event.detail.draftValues;
+	   const result = JSON.parse(JSON.stringify(event.detail.draftValues));
+	   if(this.totalOrderQty != null || this.totalOrderQty !== undefined){
+	          const preQty = this.selectedOrders.find(item => item.Id === result.Id);
+           	   if(preQty != null || preQty != undefined ){
+           	      if(result.OrderQty < preQty.OrderQty){
+           	          result[0].OrderQty = result[0].OrderQty - preQty[0].OrderQty;
+           	          this.totalOrderQty.push(preQty);
+                  		}
+					}else{
+						 this.totalOrderQty.push(preQty);
+					}
+				}
+				let qty = result[0].OrderQty;
+				let id = result[0].Id;
+				const singleRow = this.data.find(obj => obj.Id === id);
+				this.totalAmount =  singleRow.UnitPrice * qty;
+				this.selectedOrders.push(result);
 	}
 	handleOnRowAction(event){
 
