@@ -154,6 +154,9 @@ handleSave(event){
 	   console.log('event.detail.value:'+ JSON.stringify(event.detail.draftValues));
 	   let selectedOrderQty = event.detail.draftValues;
 	   const result = JSON.parse(JSON.stringify(event.detail.draftValues));
+
+	   if(result[0].OrderQty === null || result[0].OrderQty === undefined ) return;
+
 	   if(this.totalOrderQty != null || this.totalOrderQty !== undefined){
 	          const preQty = this.selectedOrders.find(item => item.Id === result.Id);
            	   if(preQty != null || preQty != undefined ){
