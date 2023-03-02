@@ -5,6 +5,7 @@
     https://am-gateway.ghdcoredev.com
     to get access token
     following setup element involved in this process
+    App Manager
     Named Credential: GHD_Core_Token_Request
     External Credentials : GHD_Token_Request
     Permission Set: Basic_Auth_Permission_Set
@@ -18,14 +19,14 @@ public with sharing class GhdApiAccessTokenRequestService {
         Http http= new Http();
         AccessTokenWrapper wrapper = null;
         HttpRequest request = new HttpRequest();
-        request.setEndpoint('callout:GHD_Core_Token_Request/ghdcoredevdomain/oauth/token?grant_type=client_credentials&Content-Type=application/x-www-form-urlencoded');
+        GHD_meta_values__mdt  partUrl = GHD_meta_values__mdt.getInstance('GHD_Access_token_Part_URL');
+        request.setEndpoint('callout:GHD_Core_Token_Request'+partUrl.Value__c);
         request.setMethod('POST');
         HttpResponse response = http.send(request);
         if(response.getStatusCode() == 200){
-            System.debug(response.getBody());
             wrapper = (AccessTokenWrapper)JSON.deserialize(response.getBody(),AccessTokenWrapper.class);
         }
-        System.debug('#wrapper:' + wrapper);
+        System.debug('wrapper:'+wrapper);
         return wrapper;
     }
 
