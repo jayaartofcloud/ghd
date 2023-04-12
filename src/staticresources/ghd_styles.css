@@ -1,0 +1,9 @@
+.slds-modal__container{
+    width:75% !important;
+    max-width: 75% !important;
+}
+
+.slds-modal__container_xSmall{
+    width:30% !important;
+    max-width:30 % !important;
+}

@@ -3,21 +3,46 @@
  -->
 
 <!-- Order Editor -->
-<template>
-<!--	<h1>RecordId: {recordId}</h1>-->
+<template >
+
+	<template if:true={start}>
+	<!-- Ant code attempt -->
+	<lightning-combobox
+			name="orderType"
+			label="Order Type"
+			value={selectedOrderType}
+			placeholder="Select Order Type"
+			options={optionsType}
+			required
+			onchange={handleOrderTypeChange} ></lightning-combobox>
+
+
+	<br>
 	<lightning-combobox
 			name="productFamily"
 			label="Product Family"
 			value={selectedFamily}
 			placeholder="Select Family"
 			options={options}
-			required="false"
-			onchange={handleChange} ></lightning-combobox>
-	<br/>
+			onchange={handleProductFamilyChange} ></lightning-combobox>
+	<br>
 
 	<lightning-input type="text" label="Enter Search key" onchange={handleSearch}></lightning-input>
-	<hr/>
-	<h3>Total Amount: £ {totalAmount}</h3>
+
+
+	<h2>Total Amount: £{totalAmount}</h2>
+	<br>
+	<lightning-icon icon-name="utility:down" variant="error" size="x-small" alternative-text="Out Of Stock" title="Out Of Stock"></lightning-icon>
+	<lightning-icon icon-name="utility:right" variant="warning" size="x-small" alternative-text="Low Stock" title="Low Stock"></lightning-icon>
+	<lightning-icon icon-name="utility:up" variant="success" size="x-small" alternative-text="In Stock" title="In Stock"></lightning-icon>
+<!--<img src={myIcon} />-->
+<!--	<lightning-icon src={myIcon}></lightning-icon>-->
+<!--		<svg height="8px" width="8px"   viewBox="0 0 451.827 451.827" xml:space="preserve" fill="#ff0000" stroke="#ff0000" stroke-width="0.00451827"><g id="redDot" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path style="fill:#ff0000;" d="M225.922,0C101.351,0,0.004,101.347,0.004,225.917s101.347,225.909,225.917,225.909 c124.554,0,225.901-101.347,225.901-225.909C451.823,101.347,350.476,0,225.922,0z"></path> </g> </g> </g></svg>-->
+
+<!--		<svg height="8px" width="8px"   viewBox="0 0 451.827 451.827" xml:space="preserve" fill="#FFFF00" stroke="#FFFF00" stroke-width="0.00451827"><g id="greenDot" stroke-width="0"></g><g id="SVGRepo_tracerCarrier1" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier1"> <g> <g> <path style="fill:#FFFF00;" d="M225.922,0C101.351,0,0.004,101.347,0.004,225.917s101.347,225.909,225.917,225.909 c124.554,0,225.901-101.347,225.901-225.909C451.823,101.347,350.476,0,225.922,0z"></path> </g> </g> </g></svg>-->
+
+<!--		<svg height="8px" width="8px"   viewBox="0 0 451.827 451.827" xml:space="preserve" fill="#008000" stroke="#008000" stroke-width="0.00451827"><g id="amberDot" stroke-width="0"></g><g id="SVGRepo_tracerCarrier2" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier2"> <g> <g> <path style="fill:#008000;" d="M225.922,0C101.351,0,0.004,101.347,0.004,225.917s101.347,225.909,225.917,225.909 c124.554,0,225.901-101.347,225.901-225.909C451.823,101.347,350.476,0,225.922,0z"></path> </g> </g> </g></svg>-->
+
 
 	<div style="height: 300px;">
 		<lightning-datatable
@@ -25,27 +50,36 @@
 				data={data}
 				show-row-number-column
 				row-number-offset={rowOffset}
+				draft-values={draftValues}
 				suppress-bottom-bar
 				hide-checkbox-column
-				column-widths-mode="auto"
+				column-widths-mode="fixed"
+				min-column-width="100px"
 				class="productDataTable"
 				oncellchange= {handleOnCellChange}
 				onrowaction={handleOnRowAction}
-				draft-values={draftFieldValues}
-				columns={columns}>
+				onload={applyDtStyle}
+				errors={errors}
+				columns={columns}
+				data-id="mainDatatable">
 		</lightning-datatable>
+		<!--draft-values={draftFieldValues}-->
+	</div>
+	<div if:true={dataSpinner} class="slds-spinner_inline spinner-padding">
+		<lightning-spinner variant="brand" alternative-text="Loading Materials..." size="medium"></lightning-spinner>
 	</div>
 	<br/>
 <div style="text-align:center;">
-	<lightning-button variant="brand-outline" label= "Save as Draft" title="Save as Draft" onclick={handleDraft}></lightning-button> &nbsp;
-	<lightning-button variant="brand" label="Save" title="Save" onclick={handleSave}></lightning-button> &nbsp;
-	<lightning-button variant="brand" label="Add Promotion" title="Add Promotion" onclick={showPromotionModel}></lightning-button>
+	<lightning-button variant="brand-outline" class="slds--around_xx-small" label= "Save as Draft" title="Save as Draft" onclick={handleSaveDraft}></lightning-button> &nbsp;
+	<lightning-button variant="brand-outline"  class="slds-p-around_xx-small" label= "View Draft" title="View Draft" onclick={handleViewDraft}></lightning-button> &nbsp;
+	<lightning-button variant="brand" label="Save"  class="slds-p-around_xx-small" title="Save" onclick={handleOrderSave}></lightning-button> &nbsp;
+	<lightning-button variant="brand" label="Clear"  class="slds-p-around_xx-small" title="Clear" onclick={handleClear}></lightning-button> &nbsp;
+	<lightning-button variant="brand" label="Add Promotion"  class="slds-p-around_xx-small" title="Add Promotion" onclick={showPromotionModel}></lightning-button>
 </div>
 
 
 	<!-- modal start -->
 	<template if:true={isShowModal}>
-
 		<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
 			<div class="slds-modal__container">
 				<!-- modal header start -->
@@ -76,4 +110,139 @@
 		<div class="slds-backdrop slds-backdrop_open"></div>
 	</template>
 	<!-- modal end -->
+
+	<!-- view draft model-->
+	<template if:true={isShowViewDraftModal}>
+		<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01"  aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+			<div class="slds-modal__container">
+				<!-- modal header start -->
+				<header class="slds-modal__header">
+					<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={hidePromotionModel}>
+						<lightning-icon icon-name="utility:close"
+										alternative-text="close"
+										variant="inverse"
+										size="small" ></lightning-icon>
+						<span class="slds-assistive-text">Close</span>
+					</button>
+					<h2 id="modal-heading3" class="slds-text-heading_medium slds-hyphenate">View Saved Order Draft</h2>
+				</header>
+
+				<!-- modal body start -->
+				<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+					<template if:true={recordId}>
+						<div>
+							<div style="height: 300px;">
+								<lightning-datatable
+										key-field="Id"
+										data={viewDraftScreenData}
+										onrowselection={handleViewDraftRowSelected}
+										selected-rows={preSelectedRows}
+										columns={draftColumns} data-id="draftTable">
+								</lightning-datatable>
+							</div>
+						</div>
+					</template>
+				</div>
+
+				<!-- modal footer start-->
+				<footer class="slds-modal__footer">
+					<lightning-button  variant="brand" label="Submit" onclick={handleDraftItemSelectSubmit} ></lightning-button>
+					<button class="slds-button slds-button_neutral" onclick={hidePromotionModel}>Cancel</button>
+				</footer>
+
+			</div>
+		</section>
+		<div class="slds-backdrop slds-backdrop_open"></div>
+	</template>
+
+	<template if:true={isShowDraftModelName}>
+		<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01"  aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+			<div class="slds-modal__container slds-modal__container">
+				<!-- modal header start -->
+				<header class="slds-modal__header">
+					<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={hidePromotionModel}>
+						<lightning-icon icon-name="utility:close"
+										alternative-text="close"
+										variant="inverse"
+										size="small" ></lightning-icon>
+						<span class="slds-assistive-text">Close</span>
+					</button>
+					<h2 id="modal-heading" class="slds-text-heading_medium slds-hyphenate">Order Draft Name</h2>
+				</header>
+
+				<!-- modal body start -->
+				<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-3">
+					<lightning-input label="Enter an optional name to later identify this draft order."  value={draftName} onchange={handleDraftName}></lightning-input>
+				</div>
+
+				<!-- modal footer start-->
+				<footer class="slds-modal__footer">
+					<lightning-button  variant="brand" label="Submit" onclick={handleSaveAsDraft} ></lightning-button> &nbsp;
+					<button class="slds-button slds-button_neutral" onclick={hidePromotionModel}>Cancel</button>
+				</footer>
+
+			</div>
+		</section>
+		<div class="slds-backdrop slds-backdrop_open"></div>
+
+	</template>
+</template>
+
+
+<template if:true={orderPreview}>
+
+<!-- Order confirmation page -->
+	<div>
+		<h1>Order Confirmation</h1>
+		<br>
+		<h2>Total Including VAT: £{totalInclVat}</h2>
+		<br>
+		<h2>Total Excluding VAT: £{totalExclVat}</h2>
+	</div>
+	<br>
+	<lightning-layout>
+			<lightning-layout-item size="6">
+				<div class="slds-p-around_medium lgc-bg">
+					<lightning-input 
+						type="text" 
+						label="PO Reference" 
+						placeholder="Enter PO Reference..."
+						onchange={handleReferenceChange}>
+					</lightning-input>
+				</div>
+			</lightning-layout-item>
+			<lightning-layout-item size="6">
+				<div class="slds-p-around_medium lgc-bg">
+					<lightning-input 
+						type="date" 
+						name="input5" 
+						label="Estimated Delivery Date"
+						onchange={handleDateChange}>
+					</lightning-input>
+				</div>
+			</lightning-layout-item>
+	</lightning-layout>
+	<br>
+	<h3>Order Summary</h3>
+	<div style="height: 300px;">
+		<lightning-datatable
+				key-field="Id"
+				data={selectedProducts}
+				show-row-number-column
+				row-number-offset={rowOffset}
+				suppress-bottom-bar
+				hide-checkbox-column
+				column-widths-mode="auto"
+				class="selectedProductsTable"
+				onload={applyDtStyle}
+				errors={errors}
+				columns={columns}>
+		</lightning-datatable>
+	</div>
+	<br>
+	<div style="text-align:center;">
+		<lightning-button   label="Confirm Order" title="Confirm Order" onclick={handleConfirmOrder} variant="brand" ></lightning-button>&nbsp;
+		<lightning-button   label="Cancel Order" title="Cancel Order" onclick={handleCancelOrder} variant="brand-outline" ></lightning-button>
+	</div>
+</template>
 </template>

@@ -1,0 +1,20 @@
+<!--
+ - Created by Jayakumar Mogenahall on 22/02/2023.
+ -->
+
+<!-- Draft Product Selection View -->
+<template>
+<h1>Hello world 1</h1>
+<!--	<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">-->
+	<div>
+							<div style="height: 300px;">
+								<lightning-datatable
+										key-field="Id"
+										data={data}
+										onrowselection={handleRowSelected}
+										onclick={onClick}
+										columns={draftColumns}>
+								</lightning-datatable>
+							</div>
+	</div>
+</template>

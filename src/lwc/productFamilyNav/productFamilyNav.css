@@ -1,0 +1,41 @@
+/**
+ * Created by Jayakumar Mogenahall on 21/02/2023.
+ */
+
+.circle {
+background: lightblue;
+    border-radius: 50%;
+}
+img{
+     border-radius: 50%;
+
+}
+
+.circle-border{
+     border-color : blue;
+	 outline: rgba(109, 89, 62, 1) solid 2px;
+	 display:flex;
+	 text-align :center;
+	 width:200px;
+}
+.circle-border:hover{
+      border-color: purple;
+}
+
+div.item {
+    vertical-align: top;
+    display: inline-block;
+    text-align: center;
+    width: 120px;
+}
+
+.caption {
+    display: block;
+    text-align:center;
+    word-wrap: break-word;
+}
+.imgDiv {
+     display:inline-block;
+     text-align:center;
+     width:80px;
+}

@@ -9,8 +9,8 @@ public class MaterialRequestWrapper {
                 dimensions = new ApiObjectWrapper.Dimension();
                 codes = new ApiObjectWrapper.Codes();
                 region = new ApiObjectWrapper.Region();
-                additionalInfo = new ApiObjectWrapper.AdditionalInfoWrapper();
-                origin = new ApiObjectWrapper.OriginWrapper();
+                additionalInfo = new AdditionalInfoModel();
+                origin = new OriginModel();
                 startDate = Date.today();
                 kitDate = Date.today();
         }
@@ -42,8 +42,8 @@ public class MaterialRequestWrapper {
          public ApiObjectWrapper.Dimension dimensions;
          public ApiObjectWrapper.Codes codes;
          public ApiObjectWrapper.Region region;
-         public ApiObjectWrapper.AdditionalInfoWrapper additionalInfo;
-         public ApiObjectWrapper.OriginWrapper origin;
+         public AdditionalInfoModel additionalInfo;
+         public OriginModel origin;
 
 
     public static MaterialRequestListWrapper parse(String json){

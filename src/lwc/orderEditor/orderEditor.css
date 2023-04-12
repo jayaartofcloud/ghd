@@ -6,44 +6,112 @@
     --slds-c-input : 80px;
 }
 
-.redColor
-{
-    color:red;
+h1 {
+    font-size: x-large;
+    text-align: center;
 }
 
-td.slds-cell-edit .slds-form-element input {
-    width: 30%; /* Replace with your desired width */
-}
-
-input{
-    width:300px;
-}
-
-.redDot {
-  height: 10px;
-  width: 10px;
-  background-color: #FF0000;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.yellowDot {
-  height: 10px;
-  width: 10px;
-  background-color: #FFFF00;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.greenDot {
-  height: 10px;
-  width: 10px;
-  background-color: #008000;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-h3 {
+h2 {
     font-size: large;
-    color: rgba(126, 133, 140, 1);
 }
+
+
+/*.redColor*/
+/*{*/
+/*    color:red;*/
+/*}*/
+
+/* .slds-icon-text-default*/
+/* {*/
+/*     background-color:red;*/
+/* }*/
+/*.redColor svg {*/
+/*    fill:red;*/
+/*}*/
+/*td.slds-cell-edit .slds-form-element input {*/
+/*    width: 30%; !* Replace with your desired width *!*/
+/*}*/
+
+/*input{*/
+/*    width:300px;*/
+/*}*/
+
+/*.redDot {*/
+/*  height: 10px;*/
+/*  width: 10px;*/
+/*  background-color: #FF0000;*/
+/*  border-radius: 50%;*/
+/*  display: inline-block;*/
+/*}*/
+
+/*.yellowDot {*/
+/*  height: 10px;*/
+/*  width: 10px;*/
+/*  background-color: #FFFF00;*/
+/*  border-radius: 50%;*/
+/*  display: inline-block;*/
+/*}*/
+
+/*.greenDot {*/
+/*  height: 10px;*/
+/*  width: 10px;*/
+/*  background-color: #008000;*/
+/*  border-radius: 50%;*/
+/*  display: inline-block;*/
+/*}*/
+
+/*h3 {*/
+/*    font-size: large;*/
+/*    color: rgba(126, 133, 140, 1);*/
+/*}*/
+
+
+/*.upIconColor {*/
+/*	--sds-c-icon-color-foreground-default: white;*/
+/*	--sds-c-icon-color-background: orange;*/
+/*}*/
+
+
+/*.slds-modal__container{*/
+/*    width:50% !important;*/
+/*    max-width: 50% !important;*/
+/*}*/
+
+/*.redColor{*/
+/*    fill : #FF0000;*/
+/*}*/
+/*.greenColor{fill:#008000}*/
+/*.amberColor {fill: #FFFF00;}*/
+/*.iconContainer{*/
+/*    width : 50px;*/
+/*    height:50px;*/
+/*    display:inline-block;*/
+/*}*/
+
+/*.custom-input {*/
+/*   border: 1px solid #ccc;*/
+/*   border-radius: 4px;*/
+/*   padding: 5px;*/
+/*   font-size: 14px;*/
+/*   width:80px;*/
+/* }*/
+
+
+/* .utilityIconRedColor {
+     fill: red;
+}
+.utilityIconGreenColor {
+     fill: green;
+}
+.utilityIconAmberColor {
+     fill: yellow;
+} */
+
+/*
+.THIS lightning-icon.slds-icon-text-default > lightning-primitive-icon > svg > use{
+    fill: green;
+}
+.slds-current-color{
+    fill:green;
+    background-color:green;
+} */
