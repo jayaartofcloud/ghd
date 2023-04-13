@@ -5,7 +5,6 @@
 public class OrderDraftService {
 
     @AuraEnabled
-
     public static List<DraftViewWrapper> getDraftViewForCustomer(String customerId,String draftName) {
         Map<String,DraftViewWrapper> draftViewWrappers = new Map<String,DraftViewWrapper>();
         try {

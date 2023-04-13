@@ -5,6 +5,7 @@
 public class PriceListApiRetryFinalizerHandler implements Finalizer{
     public void execute(FinalizerContext ctx) {
         String parentJobId = ctx.getAsyncApexJobId();
+        System.debug('###ctx.getResult():'+ctx.getResult());
         if(ctx.getResult() == ParentJobResult.SUCCESS){
             //do nothing
             System.debug('### Parent queueable jobId =>' + parentJobId + ' completed successfully.');

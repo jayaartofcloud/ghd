@@ -12,7 +12,7 @@ public class PriceListAPIProcessQueueable implements System.Queueable, Database.
 
     public void execute(QueueableContext param1) {
 
-         Finalizer finalizer = new PriceListApiRetryFinalizerHandler();
+        Finalizer finalizer = new PriceListApiRetryFinalizerHandler();
         System.attachFinalizer(finalizer);
 
         HttpRequest req = new HttpRequest();

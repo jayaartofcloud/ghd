@@ -14,12 +14,23 @@ public with sharing class OrderService {
         try {
 
             savepoint = Database.setSavepoint();
-
+System.debug('---1---');
             OrderCreateWrapper orderWrapper = OrderCreateWrapper.parse(jsonInput);
+            System.debug('---2---');
+            System.debug('#orderWrapper:'+orderWrapper);
+
+            if(String.isNotBlank(orderWrapper.poReference)){
+                Boolean isPoRefFound = [SELECT Id, POReference__c FROM GhdOrder__c WHERE POReference__c =: orderWrapper.poReference] != null;
+                if(isPoRefFound){
+                    AuraHandledException e = new  AuraHandledException('');
+                    e.setMessage('PO Reference is already exists, please use different reference.');
+                    throw e;
+                }
+            }
 
             for(OrderLineModel model : orderWrapper.products){
                 if(String.isEmpty(model.materialNumber)){
-                    AuraHandledException e = new  AuraHandledException('Hello World');
+                    AuraHandledException e = new  AuraHandledException('');
                     e.setMessage('Please make sure the order line item  contains materialCode.');
                     throw e;
                 }
