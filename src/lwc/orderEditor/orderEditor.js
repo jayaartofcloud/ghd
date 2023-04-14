@@ -75,6 +75,10 @@ export default class orderEditor extends LightningElement {
 	totalExclVat = 0.00;
 	selectedDate = '';
 	selectedReference = '';
+	selectedLaserText = '';
+	showPersonalisation = false;
+	showReplacement = false;
+	showFree = false;
 
 
 	get options() {
@@ -95,7 +99,7 @@ export default class orderEditor extends LightningElement {
         ];
     }
 
-	@wire(getMaterialsForAccount, {accountId:'$recordId',searchToken:'$searchToken',draftName:null})
+	@wire(getMaterialsForAccount, {accountId:'$recordId',searchToken:'$searchToken',draftName:''})
 	wiredResult({error,data}){
 
 	this.wiredDataResult = data;
@@ -126,7 +130,7 @@ export default class orderEditor extends LightningElement {
 	connectedCallback() {
 	    const  icons =   this.template.querySelectorAll('lightning-icon[data-key="left"]')
 	    loadStyle(this, dataTableStyles);
-		//this.data = generateData({ amountOfRecords: 100 });
+		this.data = generateData({ amountOfRecords: 100 });
 	}
 
 	handleProductFamilyChange(event){
@@ -178,6 +182,9 @@ handleOrderSave(event){
 		this.totalExclVat = parseFloat(this.totalAmount).toFixed(2);
 		this.start = false;
 		this.orderPreview = true;
+		if(this.selectedOrderType == 'Personalisation Order'){ this.showPersonalisation = true; }
+		else if(this.selectedOrderType == 'Replacement Order'){ this.showReplacement = true; }
+		else if(this.selectedOrderType == 'Free Order'){ this.showFree = true; }
   		}
 
 		makeProductDumpCall(){
@@ -230,25 +237,31 @@ handleOrderSave(event){
 		}
 
 		handleSaveDraft(event){
-			this.draftValues = this.template.querySelector('lightning-datatable').draftValues;
-			console.log('this.draftValues handleSaveDraft :'+ JSON.stringify(this.draftValues) )
-			if(this.draftValues.length == 0){
+			//var table = this.template.querySelector('lightning-datatable');
+			const mainDataTableSelectedData =	this.template.querySelector("[data-id='mainDatatable']").draftValues;
+			console.log('#mainDataTableSelectedData:' + JSON.stringify(mainDataTableSelectedData))
+			console.log('--1')
+			if(!mainDataTableSelectedData){
+			    	console.log('--2')
 				this.showWarningToast('Please make sure at-least one order exits to save as Draft');
 			}else{
+			    	console.log('--3')
 					 this.isShowDraftModelName = true;
 				}
 			if(this.isShowModal){
+			    	console.log('--4')
 			      this.handleViewDraft();
    			}
+   				console.log('--5')
    		}
 
      async handleViewDraft(){
 		 this.isShowViewDraftModal = true;
 		 console.log('#this.draftValues:'+this.draftValues)
-		 console.log('this.recordId 1:' + this.recordId + ' this.draftName 1:'+this.draftName)
 		  await getDraftViewForCustomer({customerId:this.recordId,draftName:this.draftName }).then(result =>{
 				  if(result){
 				   	this.viewDraftScreenData = result;
+					//this.preSelectedRows.push(result[0])
 				 }}).catch(error => {
 				      alert('Error:'+JSON.stringify(error))
      });
@@ -263,7 +276,7 @@ handleOrderSave(event){
         let draftValues = this.template.querySelector("[data-id='draftTable']").data;
         console.log('###this.selectedDraftRowDescription:'+ this.selectedDraftRowDescription)
         let selectedRowData = draftValues.find(x => x.Description === this.selectedDraftRowDescription)
-		getMaterialsForAccount({accountId: this.recordId,searchToken:'$searchToken',draftName: this.draftName}).then(result => {
+		getMaterialsForAccount({accountId:'$recordId',searchToken:'$searchToken',draftName: this.selectedDraftRowDescription}).then(result => {
 		    for (let i = 0; i < result.length; i++) {
               const resultObj = result[i];
               const index = this.data.findIndex(obj => obj.Id === resultObj.Id);
@@ -285,7 +298,8 @@ handleOrderSave(event){
     handleSaveAsDraft(event){
 		this.isShowViewDraftModal = false;
 
-		 var draftValues = this.draftValues;
+		 var draftValues = this.template.querySelector("[data-id='mainDatatable").draftValues;
+		// var rows = updatedValues.data;
 		 console.log('draftValues:' + JSON.stringify(draftValues))
 		 this.draftFieldValues = draftValues;
 		 this.isShowDraftModelName = false;
@@ -307,7 +321,7 @@ handleOrderSave(event){
 //				return Object.assign(newRow, changes)
 //			}
 //		});
-
+console.log('#this.draftFieldValues:'+this.draftFieldValues)
 		createDaft({jsonInput:JSON.stringify(this.draftFieldValues),accountId:this.recordId, draftDesc: this.draftName,totalAmount: this.totalAmount }).then(result =>{
 		if(result){
 				this.showSuccessToast();
@@ -368,7 +382,6 @@ handleOrderSave(event){
   		if(this.isShowDraftModelName == true){
   		    this.isShowDraftModelName = false;
     	}
-    	this.totalAmount = null
 	}
 	handlePromotionSubmit(){
 //		alert('Name is '+this.name);
@@ -380,7 +393,6 @@ handleOrderSave(event){
 	}
 
 	handleDraftName(event){
-	    alert(event.detail.value)
 	    this.draftName = event.detail.value;
  	}
 
@@ -396,6 +408,10 @@ handleOrderSave(event){
 		this.selectedDate = event.detail.value;
 	}
 
+	handleLaserTextChange(event) {
+		this.selectedLaserText = event.detail.value;
+	}
+
  	handleConfirmOrder(event) {
 
  	    var jsonPayload = {};
@@ -405,14 +421,20 @@ handleOrderSave(event){
  	    jsonPayload.estimatedDeliveryDate = this.selectedDate;
  	    jsonPayload.products = [];
  	    jsonPayload.accountId = this.recordId;
+		if(this.showPersonalisation){ jsonPayload.orderType = 'P'; }
+		jsonPayload.laserText = this.selectedLaserText;
  	    this.selectedProducts.forEach(x => {
  	        jsonPayload.products.push(x);
       })
 
+	  console.log('jsonInput>>>> ' + JSON.stringify(jsonPayload));
       createOrder({'jsonInput' : JSON.stringify(jsonPayload)}).then(result => {
           this.showSuccessToast();
           this.start = true;
           this.orderPreview = false;
+		  this.showPersonalisation = false;
+		  this.showReplacement = false;
+		  this.showFree = false;
           this.selectedProducts = [];
           this.totalAmount = 0.0
           console.log('result:'+result)
@@ -425,7 +447,6 @@ handleOrderSave(event){
  	handleCancelOrder(event) {
 		this.orderPreview = false;
 		this.start = true;
-		this.totalAmount = 0;
  	}
 
 }

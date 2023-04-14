@@ -8,8 +8,8 @@ public with sharing class PriceService {
 
         HttpRequest req = new HttpRequest();
 
-//        GhdApiAccessTokenRequestService.AccessTokenWrapper accessTokenService = GhdApiAccessTokenRequestService.getGhdApiAccessToken();
-//        System.debug('#accessTokenService:' + accessTokenService);
+        //GhdApiAccessTokenRequestService.AccessTokenWrapper accessTokenService = GhdApiAccessTokenRequestService.getGhdApiAccessToken();
+      //  System.debug('#accessTokenService:' + accessTokenService);
         //req.setEndpoint(' https://ghdcoredev.com/api/crm/getpricelist?customerAccount='+customerId);
         req.setEndpoint('https://ghdcoretest.com/api/crm/json/getpricelist');
         req.setMethod('GET');
@@ -18,7 +18,7 @@ public with sharing class PriceService {
         system.debug('#json:' + jsonBody);
 
         //PriceList api can be accessible from UserTest, hence token is from UserTest
-        string access_token = 'eyJraWQiOiJkZWZhdWx0IiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJTRkRDVGVzdCIsImF1ZCI6IlNGRENUZXN0IiwiZG9tYWluIjoiMjVkODY1YmQtNDQ4Mi00NmFmLTk4NjUtYmQ0NDgyNzZhZjVhIiwiaXNzIjoiaHR0cHM6XC9cL2FtLWdhdGV3YXkuZ2hkY29yZXRlc3QuY29tXC9naGRjb3JldGVzdGRvbWFpblwvb2lkYyIsImV4cCI6MTY4MTI1MjQ5NywiaWF0IjoxNjgxMjQ1Mjk3LCJqdGkiOiJpQWUzTk1lU2pBcTRuVjFrZ0ttV1NCWDJxWnZlbGZrclhneVZhUkFralNFIn0.A3rJkJW3kCu9gQ_ItF0PCc3ycs0YRyaMPsXZL7pfW5UEZmwkFas389Zef8Eme5StW6IkaX4T-k6I88uHzMuWU2HP_kbnntT35vGelUOdXhU62aPO5Bz1G43FIdT2vPSQM5LEyLcwV_JsME8E0kWYM5EQgyPh6T1Hb6kz60w9xV_ewd9QzplqSIJkdBBfcyBXaaZCvKuJBzo553qlY3YgxyI1mFX-wUbC_rNJchB7FoWAP_0giy-JD33kwkc5TfKAYVtGUvl059_-v7qt1nFldkCqLDDTEkU1RMTlMtUypD-jh4Dn33BGzGJBEq4sdC0Hogvvq0-V7cMCITsy4se4mQ';
+        string access_token = 'eyJraWQiOiJkZWZhdWx0IiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJTRkRDVGVzdCIsImF1ZCI6IlNGRENUZXN0IiwiZG9tYWluIjoiMjVkODY1YmQtNDQ4Mi00NmFmLTk4NjUtYmQ0NDgyNzZhZjVhIiwiaXNzIjoiaHR0cHM6XC9cL2FtLWdhdGV3YXkuZ2hkY29yZXRlc3QuY29tXC9naGRjb3JldGVzdGRvbWFpblwvb2lkYyIsImV4cCI6MTY4MTQ2NjY0NSwiaWF0IjoxNjgxNDU5NDQ1LCJqdGkiOiIzWDR5WVpIRUdIQ3VJcE1pazk5MUNfd00tYmtZTkdBVnkzVXdiUGtoeXVNIn0.zhHnj2IxgUxhLnK84XCPO6yVXJmV-N8RyKFj78ERNsaiuDge1W5MWOpLzAZC4TEEwfN6V-cBUbshm94qT7dJg4vPWqrg0b706XjzS7bNa9d3PC92r_0CdlpA80yUGzaEKXXDJcW9xH10qdPSfM3qmPGZkl-7PRjsN522_zKSdGCsBO6wbyPFydYbBqAoQQwkChx46IrsfTFEET5vs5El1wo-w93dwUtLbBBCfUba-Znjq7DvGZPAVmJ_bh782R5kKvpBRip8FHNUI58_a7CCFRYoLqRzYiUpJt9o9MVmRtraAMsgmrV1FF_lkMbELW1_Y9gX1merUrS7UMzEEtg-mg';
         req.setHeader('Authorization', 'bearer ' + access_token);
         req.setBody(jsonBody);
 

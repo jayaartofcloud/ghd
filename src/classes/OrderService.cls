@@ -14,17 +14,18 @@ public with sharing class OrderService {
         try {
 
             savepoint = Database.setSavepoint();
-System.debug('---1---');
-            OrderCreateWrapper orderWrapper = OrderCreateWrapper.parse(jsonInput);
-            System.debug('---2---');
-            System.debug('#orderWrapper:'+orderWrapper);
 
+            OrderCreateWrapper orderWrapper = OrderCreateWrapper.parse(jsonInput);
+System.debug('#orderWrapper:'+orderWrapper);
             if(String.isNotBlank(orderWrapper.poReference)){
-                Boolean isPoRefFound = [SELECT Id, POReference__c FROM GhdOrder__c WHERE POReference__c =: orderWrapper.poReference] != null;
-                if(isPoRefFound){
-                    AuraHandledException e = new  AuraHandledException('');
-                    e.setMessage('PO Reference is already exists, please use different reference.');
-                    throw e;
+                List<GhdOrder__c> orders = [SELECT Id, POReference__c FROM GhdOrder__c WHERE POReference__c =: orderWrapper.poReference];
+                System.debug('#orders:'+orders);
+                if(orders.size() > 0 ){
+                    if(String.isBlank(orders[0]?.POReference__c)){
+                        AuraHandledException e = new  AuraHandledException('');
+                        e.setMessage('PO Reference is already exists, please use different reference.');
+                        throw e;
+                    }
                 }
             }
 
@@ -38,7 +39,7 @@ System.debug('---1---');
             System.debug('#orderWrapper:'+orderWrapper);
             String accountCustomerId = [SELECT Id, CustomerId__c FROM Account WHERE Id =: orderWrapper.accountId].CustomerId__c;
             Account account = [SELECT Id, FirstName__c, LastName__c,Type,Phone,CustomerId__c,Primary_Email__c,NationalNumber__c,CommercialName__c,CountryCurrency__c, DeliveryFirstName__c, DeliveryLastName__c,DeliveryPhone__c,DeliveryEmail__c,
-                    BillingStreet, BillingState,BillingCity,BillingCountry, BillingPostalCode,ShippingStreet,ShippingState,ShippingCity,ShippingCountry,ShippingPostalCode
+            BillingStreet, BillingState,BillingCity,BillingCountry, BillingPostalCode,ShippingStreet,ShippingState,ShippingCity,ShippingCountry,ShippingPostalCode
             FROM Account WHERE CustomerId__c =: accountCustomerId];
             System.debug('#Account:'+ account);
             List<Origin__c> origin1 = [SELECT CountryCode__c,Identifier__c,Application__c,eCommStore__c FROM Origin__c WHERE Account__c =: account.Id];
@@ -51,11 +52,13 @@ System.debug('---1---');
             order.OrderDate__c = orderWrapper.estimatedDeliveryDate;
             order.CountryCode__c = origin.CountryCode__c;
             order.AccountId__c = account.Id;
+            order.OrderType__c = orderWrapper.OrderType;
+            order.Laser_Text__c = orderWrapper.LaserText;
 
             System.debug('--2');
             Database.SaveResult  orderSaveResult = Database.insert(order);
             System.debug('Order Created:' +orderSaveResult.getId());
-            System.debug('orderSaveResult.getId():'+orderSaveResult.getId());
+System.debug('orderSaveResult.getId():'+orderSaveResult.getId());
             VAT__mdt vat = [SELECT Id, VAT__c FROM VAT__mdt WHERE VATCountry__r.Masterlabel =: 'United Kingdom'];
             GhdOrder__c createdOrder = [SELECT Id, POReference__c,AccountId__c, CountryCode__c  FROM GhdOrder__c where Id =: orderSaveResult.getId()];
             System.debug('createdOrder:'+createdOrder);
@@ -99,7 +102,7 @@ System.debug('---1---');
                 orderItems.add(orderItem);
             }
             if(orderItems.size() > 0){
-                orderLineSaveResult = Database.insert(orderItems);
+                 orderLineSaveResult = Database.insert(orderItems);
             }
             System.debug('#orderItems:'+orderItems);
 
@@ -126,7 +129,7 @@ System.debug('---1---');
             requestWrapper.orderingCustomer.codePorte = '';
 
             //Delivery Info mandatory fields starts
-            //    System.debug('#requestWrapper:'+requestWrapper);
+        //    System.debug('#requestWrapper:'+requestWrapper);
             requestWrapper.deliveryInfo.deliveryDate = String.valueOf(Date.today());
             requestWrapper.deliveryInfo.deliveryMethod = 'Standard';
             requestWrapper.deliveryInfo.deliveryInstructions = '';
@@ -172,21 +175,21 @@ System.debug('---1---');
             //Discount mandatory fields end
 
             System.debug('requestWrapper:'+requestWrapper);
-            System.enqueueJob(new OrderCalloutQueueable(requestWrapper));
+       System.enqueueJob(new OrderCalloutQueueable(requestWrapper));
 
 
 
         }
         catch (DmlException dmlException){
             System.debug('dmlException:'+dmlException);
-            for(Database.SaveResult sr : oliSaveResult){
-                if(!sr.isSuccess()){
-                    System.debug('---------OrderCreate Error-----------');
-                    for(Database.Error err : sr.getErrors()){
-                        System.debug(err.getMessage() + ' -> ' + err.getFields());
-                    }
-                }
-            }
+           for(Database.SaveResult sr : oliSaveResult){
+               if(!sr.isSuccess()){
+                   System.debug('---------OrderCreate Error-----------');
+                   for(Database.Error err : sr.getErrors()){
+                       System.debug(err.getMessage() + ' -> ' + err.getFields());
+                   }
+               }
+           }
             Database.rollback(savepoint);
             throw new AuraHandledException(dmlException.getMessage());
         }

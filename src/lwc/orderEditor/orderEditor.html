@@ -222,6 +222,20 @@
 				</div>
 			</lightning-layout-item>
 	</lightning-layout>
+	<lightning-layout if:true={showPersonalisation}>
+		<lightning-layout-item size="6">
+			<div class="slds-p-around_medium lgc-bg">
+				<lightning-input 
+					type="text" 
+					label="Laser Text" 
+					placeholder="Enter up to 20 characters"
+					onchange={handleLaserTextChange}
+					maxlength="20"
+				>
+				</lightning-input>
+			</div>
+		</lightning-layout-item>
+	</lightning-layout>
 	<br>
 	<h3>Order Summary</h3>
 	<div style="height: 300px;">

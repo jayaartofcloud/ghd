@@ -26,48 +26,50 @@ global class OrderProcess {
         Savepoint sp = Database.setSavepoint();
         try {
 
-            GhdOrder__c order = new GhdOrder__c();
-            order.OrderDate__c = Date.valueOf(orw.orderDate);
-            order.CountryCode__c = orw.countryCode;
-            order.OrderType__c = orw.orderType;
-            order.POReference__c = orw.poReference;
-            order.CurrencyCode__c = orw.currencyCode;
-            order.CountryCode__c = orw.countryCode;
-            order.ReturnReason__c ='';
-            order.ReturnedToCustomer__c = null;
-            order.PaymentTermsB2B__c = '';
-            order.paymentMethodB2B__c = '';
+                GhdOrder__c order = new GhdOrder__c();
+                order.OrderDate__c = Date.valueOf(orw.orderDate);
+                order.CountryCode__c = orw.countryCode;
+                order.OrderType__c = orw.orderType;
+                order.POReference__c = orw.poReference;
+                order.CurrencyCode__c = orw.currencyCode;
+                order.CountryCode__c = orw.countryCode;
+                order.ReturnReason__c ='';
+                order.ReturnedToCustomer__c = null;
+                order.PaymentTermsB2B__c = '';
+                order.paymentMethodB2B__c = '';
 //
 //                order.DeliveryCustomer__c = null; //customer
 //                order.OrderingCustomer__c = null; //customer
-            order.DeliveryInfo__r = null; // deliveryInfo
-            order.Payment__r = null; //payment
-            order.CollectInfo__r = null; //collectInfo;
+                order.DeliveryInfo__r = null; // deliveryInfo
+                order.Payment__r = null; //payment
+                order.CollectInfo__r = null; //collectInfo;
 
 
-            order.VAT__c = vat;
-            order.DeliveryInfo__r.DeliveryDate__c = Date.today();
-            order.DeliveryInfo__r.DeliveryMethod__c = '';
-            order.DeliveryInfo__r.DeliveryInstructions__c = '';
-            order.CollectInfo__r.CollectStoreId__c = '';
-            order.Origin__r.Application__c = origin.Application__c;
-            order.Origin__r.Identifier__c = origin.Identifier__c;
-            order.Origin__r.eCommStore__c = origin.eCommStore__c;
-            order.Origin__r.CountryCode__c = origin.CountryCode__c;
-            order.AdditionalInfo__r.Info1__c = additionalInfo.Info1__c;
-            order.AdditionalInfo__r.Info2__c = additionalInfo.Info2__c;
-            order.AdditionalInfo__r.Info3__c = additionalInfo.Info3__c;
-            order.AdditionalInfo__r.Info4__c = additionalInfo.Info4__c;
-            order.AdditionalInfo__r.Info5__c = additionalInfo.Info5__c;
+                order.VAT__c = vat;
+                order.DeliveryInfo__r.DeliveryDate__c = Date.today();
+                order.DeliveryInfo__r.DeliveryMethod__c = '';
+                order.DeliveryInfo__r.DeliveryInstructions__c = '';
+                order.CollectInfo__r.CollectStoreId__c = '';
+                order.Origin__r.Application__c = origin.Application__c;
+                order.Origin__r.Identifier__c = origin.Identifier__c;
+                order.Origin__r.eCommStore__c = origin.eCommStore__c;
+                order.Origin__r.CountryCode__c = origin.CountryCode__c;
+                order.AdditionalInfo__r.Info1__c = additionalInfo.Info1__c;
+                order.AdditionalInfo__r.Info2__c = additionalInfo.Info2__c;
+                order.AdditionalInfo__r.Info3__c = additionalInfo.Info3__c;
+                order.AdditionalInfo__r.Info4__c = additionalInfo.Info4__c;
+                order.AdditionalInfo__r.Info5__c = additionalInfo.Info5__c;
 
-            for(OrderLineModel olm : orw.orderlines){
-                OrderItem oi =   new OrderItem();
-                oi.ProductName__c = olm.productName;
-                oi.UnitPrice = olm.unitPrice;
-                oi.TaxRate__c = olm.taxRate;
-                oi.UnitTax__c = olm.unitTax;
-                oi.Quantity = olm.quantity;
-            }
+                for(OrderLineModel olm : orw.orderlines){
+                    OrderItem oi =   new OrderItem(); 
+                    oi.ProductName__c = olm.productName;
+                    oi.UnitPrice = olm.unitPrice;
+                    oi.TaxRate__c = olm.taxRate;
+                    oi.UnitTax__c = olm.unitTax;
+                    oi.Quantity = olm.quantity;
+                }
+
+
 
         }catch (DmlException  ex){
             Database.rollback(sp);

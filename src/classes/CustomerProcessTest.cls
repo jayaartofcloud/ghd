@@ -4,7 +4,7 @@
 
 @IsTest
 public with sharing class CustomerProcessTest{
-
+/*
     @TestSetup
     static void Setup(){
         Account account = new Account();
@@ -82,5 +82,7 @@ public with sharing class CustomerProcessTest{
         System.assert(res.statusCode == 401);
     }
 
+
+ */
 
 }

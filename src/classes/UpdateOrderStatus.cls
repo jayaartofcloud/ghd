@@ -14,23 +14,6 @@ global with sharing class UpdateOrderStatus {
 
         res.statusCode = 200;
         res.responseBody = Blob.valueOf(JSON.serialize(req.requestBody.toString()) + ' Message received' );
-        OrderStatus orderStatusWrapper = (OrderStatus)JSON.deserialize(req.requestBody.toString(), UpdateOrderStatusWrapper.class);
-        System.debug('orderStatusWrapper:'+orderStatusWrapper);
-    }
-
-    public class UpdateOrderStatusWrapper
-    {
-        UpdateOrderStatusWrapper(){
-            orderStatus = new OrderStatus();
-        }
-        public String customerCode;
-        public String fulfilmentSystemOrderCode;
-        public OrderStatus orderStatus;
-    }
-    public class OrderStatus
-    {
-        public String statusCode;
-        public String statusDescription;
     }
 
 }

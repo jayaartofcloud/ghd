@@ -10,9 +10,10 @@ public class OrderCreateWrapper {
     public List<OrderLineModel> products;
     public String poReference;
     public String accountId;
+    public String laserText;
+    public String orderType;
 
     public static OrderCreateWrapper parse(String json){
-        System.debug('PARSING');
         return (OrderCreateWrapper)System.JSON.deserialize(json, OrderCreateWrapper.class);
     }
 }

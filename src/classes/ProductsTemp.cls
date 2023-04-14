@@ -4,7 +4,6 @@
 
 public  class ProductsTemp {
 
-
     @AuraEnabled
     public String ProductName {get;set;}
     @AuraEnabled
@@ -26,5 +25,6 @@ public  class ProductsTemp {
 
     public static List<ProductsTemp> parse(String json) {
         return (List<ProductsTemp>) System.JSON.deserialize(json, List<ProductsTemp>.class);
+
     }
 }
