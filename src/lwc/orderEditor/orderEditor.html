@@ -3,260 +3,368 @@
  -->
 
 <!-- Order Editor -->
-<template >
+<template>
+	<template lwc:if={canShowOrderConsole}>
+		<template if:true={start}>
+			<div class="slds-box slds-theme_shade slds-p-around_medium">
+				<div class="slds-grid slds-gutters">
+					<div class="slds-col">
+						<lightning-combobox
+								name="orderType"
+								label="Order Type"
+								value={selectedOrderType}
+								placeholder="Select Order Type"
+								options={optionsType}
+								required
+								onchange={handleOrderTypeChange}></lightning-combobox>
+					</div>
 
-	<template if:true={start}>
-	<!-- Ant code attempt -->
-	<lightning-combobox
-			name="orderType"
-			label="Order Type"
-			value={selectedOrderType}
-			placeholder="Select Order Type"
-			options={optionsType}
-			required
-			onchange={handleOrderTypeChange} ></lightning-combobox>
-
-
-	<br>
-	<lightning-combobox
-			name="productFamily"
-			label="Product Family"
-			value={selectedFamily}
-			placeholder="Select Family"
-			options={options}
-			onchange={handleProductFamilyChange} ></lightning-combobox>
-	<br>
-
-	<lightning-input type="text" label="Enter Search key" onchange={handleSearch}></lightning-input>
-
-
-	<h2>Total Amount: £{totalAmount}</h2>
-	<br>
-	<lightning-icon icon-name="utility:down" variant="error" size="x-small" alternative-text="Out Of Stock" title="Out Of Stock"></lightning-icon>
-	<lightning-icon icon-name="utility:right" variant="warning" size="x-small" alternative-text="Low Stock" title="Low Stock"></lightning-icon>
-	<lightning-icon icon-name="utility:up" variant="success" size="x-small" alternative-text="In Stock" title="In Stock"></lightning-icon>
-<!--<img src={myIcon} />-->
-<!--	<lightning-icon src={myIcon}></lightning-icon>-->
-<!--		<svg height="8px" width="8px"   viewBox="0 0 451.827 451.827" xml:space="preserve" fill="#ff0000" stroke="#ff0000" stroke-width="0.00451827"><g id="redDot" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path style="fill:#ff0000;" d="M225.922,0C101.351,0,0.004,101.347,0.004,225.917s101.347,225.909,225.917,225.909 c124.554,0,225.901-101.347,225.901-225.909C451.823,101.347,350.476,0,225.922,0z"></path> </g> </g> </g></svg>-->
-
-<!--		<svg height="8px" width="8px"   viewBox="0 0 451.827 451.827" xml:space="preserve" fill="#FFFF00" stroke="#FFFF00" stroke-width="0.00451827"><g id="greenDot" stroke-width="0"></g><g id="SVGRepo_tracerCarrier1" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier1"> <g> <g> <path style="fill:#FFFF00;" d="M225.922,0C101.351,0,0.004,101.347,0.004,225.917s101.347,225.909,225.917,225.909 c124.554,0,225.901-101.347,225.901-225.909C451.823,101.347,350.476,0,225.922,0z"></path> </g> </g> </g></svg>-->
-
-<!--		<svg height="8px" width="8px"   viewBox="0 0 451.827 451.827" xml:space="preserve" fill="#008000" stroke="#008000" stroke-width="0.00451827"><g id="amberDot" stroke-width="0"></g><g id="SVGRepo_tracerCarrier2" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier2"> <g> <g> <path style="fill:#008000;" d="M225.922,0C101.351,0,0.004,101.347,0.004,225.917s101.347,225.909,225.917,225.909 c124.554,0,225.901-101.347,225.901-225.909C451.823,101.347,350.476,0,225.922,0z"></path> </g> </g> </g></svg>-->
-
-
-	<div style="height: 300px;">
-		<lightning-datatable
-				key-field="Id"
-				data={data}
-				show-row-number-column
-				row-number-offset={rowOffset}
-				draft-values={draftValues}
-				suppress-bottom-bar
-				hide-checkbox-column
-				column-widths-mode="fixed"
-				min-column-width="100px"
-				class="productDataTable"
-				oncellchange= {handleOnCellChange}
-				onrowaction={handleOnRowAction}
-				onload={applyDtStyle}
-				errors={errors}
-				columns={columns}
-				data-id="mainDatatable">
-		</lightning-datatable>
-		<!--draft-values={draftFieldValues}-->
-	</div>
-	<div if:true={dataSpinner} class="slds-spinner_inline spinner-padding">
-		<lightning-spinner variant="brand" alternative-text="Loading Materials..." size="medium"></lightning-spinner>
-	</div>
-	<br/>
-<div style="text-align:center;">
-	<lightning-button variant="brand-outline" class="slds--around_xx-small" label= "Save as Draft" title="Save as Draft" onclick={handleSaveDraft}></lightning-button> &nbsp;
-	<lightning-button variant="brand-outline"  class="slds-p-around_xx-small" label= "View Draft" title="View Draft" onclick={handleViewDraft}></lightning-button> &nbsp;
-	<lightning-button variant="brand" label="Save"  class="slds-p-around_xx-small" title="Save" onclick={handleOrderSave}></lightning-button> &nbsp;
-	<lightning-button variant="brand" label="Clear"  class="slds-p-around_xx-small" title="Clear" onclick={handleClear}></lightning-button> &nbsp;
-	<lightning-button variant="brand" label="Add Promotion"  class="slds-p-around_xx-small" title="Add Promotion" onclick={showPromotionModel}></lightning-button>
-</div>
-
-
-	<!-- modal start -->
-	<template if:true={isShowModal}>
-		<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
-			<div class="slds-modal__container">
-				<!-- modal header start -->
-				<header class="slds-modal__header">
-					<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={hidePromotionModel}>
-						<lightning-icon icon-name="utility:close"
-										alternative-text="close"
-										variant="inverse"
-										size="small" ></lightning-icon>
-						<span class="slds-assistive-text">Close</span>
-					</button>
-					<h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Add Promotion</h2>
-				</header>
-
-				<!-- modal body start -->
-				<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-					<lightning-input type="text" value={name} data-id="name" label="Name" onchange={handleNameChange}></lightning-input>
+					<div class="slds-col">
+						<lightning-combobox
+								name="productFamily"
+								data-id="categoryCombo"
+								label="Product Category"
+								value={defaultCategoryOption}
+								options={categoryOptions}
+								onchange={handleProductCategoryChange}></lightning-combobox>
+					</div>
+					<div class="slds-col">
+						<lightning-input type="text" data-id="searchField" label="Enter Search key"
+										 onchange={handleSearch}></lightning-input>
+					</div>
 				</div>
-
-				<!-- modal footer start-->
-				<footer class="slds-modal__footer">
-					<lightning-button  variant="brand" label="Submit" onclick={handlePromotionSubmit} ></lightning-button>
-					<button class="slds-button slds-button_neutral" onclick={hidePromotionModel}>Cancel</button>
-				</footer>
-
+				<!--				<div class="slds-grid slds-gutters">-->
+				<!--					<div class="slds-col">-->
+				<!--					<lightning-input type="text" data-id="searchField" label="Enter Search key" onchange={handleSearch}></lightning-input>-->
+				<!--					</div>-->
+				<!--				</div>-->
 			</div>
-		</section>
-		<div class="slds-backdrop slds-backdrop_open"></div>
-	</template>
-	<!-- modal end -->
+			<!-- Ant code attempt -->
+			<br/>
 
-	<!-- view draft model-->
-	<template if:true={isShowViewDraftModal}>
-		<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01"  aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
-			<div class="slds-modal__container">
-				<!-- modal header start -->
-				<header class="slds-modal__header">
-					<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={hidePromotionModel}>
-						<lightning-icon icon-name="utility:close"
-										alternative-text="close"
-										variant="inverse"
-										size="small" ></lightning-icon>
-						<span class="slds-assistive-text">Close</span>
-					</button>
-					<h2 id="modal-heading3" class="slds-text-heading_medium slds-hyphenate">View Saved Order Draft</h2>
-				</header>
+			<div class="slds-box slds-theme_shade slds-p-around_medium">
+				<div class="slds-grid slds-gutters">
+					<h2>Order Total Amount: £{totalAmount}</h2>
+				</div>
+			</div>
+			<template lwc:if={promotionExists}>
+				<br>
+				<div class="slds-box slds-theme_shade slds-p-around_x-small">
+					<h2>Promotions applied:</h2>
+					<br/>
 
-				<!-- modal body start -->
-				<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
-					<template if:true={recordId}>
-						<div>
-							<div style="height: 300px;">
-								<lightning-datatable
-										key-field="Id"
-										data={viewDraftScreenData}
-										onrowselection={handleViewDraftRowSelected}
-										selected-rows={preSelectedRows}
-										columns={draftColumns} data-id="draftTable">
-								</lightning-datatable>
+						<div  class="slds-grid " >
+							<div class="slds-col slds-size_2-of-6 slds-p-around_none slds-m-around_none" >
+								<span>Promotion Name:</span>
 							</div>
+							<div class="slds-col slds-size_2-of-6 slds-p-around_none slds-m-around_none" >
+								 <span>Product Type:</span>
+							</div>
+							<div class="slds-col slds-size_1-of-6 slds-p-around_none slds-m-around_none" >
+								<span>Min. Order Qty:</span>
+							</div>
+							<div class="slds-col slds-size_1-of-6 slds-p-around_none slds-m-around_none" >
+								<span>Free Quantity:</span>
+							</div>
+<!--							<div class="slds-col slds-size_4-of-8 slds-p-around_none slds-m-around_none">-->
+<!--								<span>Valid:</span>-->
+<!--							</div>-->
+ 						</div>
+
+
+					<template for:each={selPromotionCopy} for:item="promo" for:index="index">
+					<div class="slds-grid " key={promo.MaterialCode}>
+						<div class="slds-col slds-size_2-of-6" key={promo.MaterialCode}>
+							<span><b>{promo.PromotionName}</b></span>
 						</div>
+						<div class="slds-col slds-size_2-of-6" key={promo.MaterialCode}>
+							<span><b>{promo.Category}</b></span>
+						</div>
+						<div class="slds-col slds-size_1-of-6" key={promo.MaterialCode}>
+							<span><b>{promo.OrderQuantity} (Used : {promo.qtyLeft})</b></span>
+						</div>
+						<div class="slds-col slds-size_1-of-6" key={promo.MaterialCode}>
+							<span><b> {promo.FreeQuantity}</b></span>
+						</div>
+<!--						<div class="slds-col slds-size_4-of-8" key={promo.MaterialCode}>-->
+<!--							<span class="error"><b>{promo.valid}</b></span>-->
+<!--						</div>-->
+					</div>
 					</template>
 				</div>
 
-				<!-- modal footer start-->
-				<footer class="slds-modal__footer">
-					<lightning-button  variant="brand" label="Submit" onclick={handleDraftItemSelectSubmit} ></lightning-button>
-					<button class="slds-button slds-button_neutral" onclick={hidePromotionModel}>Cancel</button>
-				</footer>
+				<br/>
 
+<!--				<div class="slds-notify_container slds-is-relative">-->
+<!--					<div class="slds-notify slds-notify_toast slds-theme_warning" role="status">-->
+<!--						<div class="slds-notify__content">-->
+<!--							<h2 class="slds-text-heading_small ">Apply Promotion or remove Promotion Order Quantity.</h2>-->
+<!--						</div>-->
+<!--					</div>-->
+<!--				</div>-->
+			</template>
+			<br/>
+			<!--	<lightning-icon icon-name="utility:down" variant="error" size="x-small" alternative-text="Out Of Stock" title="Out Of Stock"></lightning-icon>-->
+			<!--	<lightning-icon icon-name="utility:right" variant="warning" size="x-small" alternative-text="Low Stock" title="Low Stock"></lightning-icon>-->
+			<!--	<lightning-icon icon-name="utility:up" variant="success" size="x-small" alternative-text="In Stock" title="In Stock"></lightning-icon>-->
+			<!--<img src={myIcon} />-->
+			<!--	<lightning-icon src={myIcon}></lightning-icon>-->
+			<!--		<svg height="8px" width="8px"   viewBox="0 0 451.827 451.827" xml:space="preserve" fill="#ff0000" stroke="#ff0000" stroke-width="0.00451827"><g id="redDot" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path style="fill:#ff0000;" d="M225.922,0C101.351,0,0.004,101.347,0.004,225.917s101.347,225.909,225.917,225.909 c124.554,0,225.901-101.347,225.901-225.909C451.823,101.347,350.476,0,225.922,0z"></path> </g> </g> </g></svg>-->
+
+			<!--		<svg height="8px" width="8px"   viewBox="0 0 451.827 451.827" xml:space="preserve" fill="#FFFF00" stroke="#FFFF00" stroke-width="0.00451827"><g id="greenDot" stroke-width="0"></g><g id="SVGRepo_tracerCarrier1" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier1"> <g> <g> <path style="fill:#FFFF00;" d="M225.922,0C101.351,0,0.004,101.347,0.004,225.917s101.347,225.909,225.917,225.909 c124.554,0,225.901-101.347,225.901-225.909C451.823,101.347,350.476,0,225.922,0z"></path> </g> </g> </g></svg>-->
+
+			<!--		<svg height="8px" width="8px"   viewBox="0 0 451.827 451.827" xml:space="preserve" fill="#008000" stroke="#008000" stroke-width="0.00451827"><g id="amberDot" stroke-width="0"></g><g id="SVGRepo_tracerCarrier2" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier2"> <g> <g> <path style="fill:#008000;" d="M225.922,0C101.351,0,0.004,101.347,0.004,225.917s101.347,225.909,225.917,225.909 c124.554,0,225.901-101.347,225.901-225.909C451.823,101.347,350.476,0,225.922,0z"></path> </g> </g> </g></svg>-->
+
+
+			<div style="height: 300px;">
+				<lightning-datatable
+
+						key-field="Id"
+						data={data}
+						show-row-number-column
+						row-number-offset={rowOffset}
+						draft-values={draftValues}
+						suppress-bottom-bar
+						hide-checkbox-column
+						column-widths-mode="auto"
+
+						max-row-selection = "1"
+						wrap-text-max-lines="2"
+						oncellchange={handleOnCellChange}
+						onrowaction={handleOnRowAction}
+						onload={applyDtStyle}
+						errors={errors}
+						columns={columns}
+
+						data-id="mainDatatable">
+				</lightning-datatable>
+				<!--draft-values={draftFieldValues}-->
+				<div if:true={dataSpinner} class="slds-spinner_relative spinner-padding">
+					<lightning-spinner variant="brand" alternative-text="Loading Materials..."
+									   size="medium"></lightning-spinner>
+				</div>
 			</div>
-		</section>
-		<div class="slds-backdrop slds-backdrop_open"></div>
+
+			<br/>
+			<div style="text-align:center;">
+				<lightning-button variant="brand-outline" class="slds--around_xx-small" label="Save as Draft"
+								  title="Save as Draft" onclick={handleSaveDraft} disabled={disableSaveDraftButton}></lightning-button> &nbsp;
+				<lightning-button variant="brand-outline" class="slds-p-around_xx-small" label="View Draft"
+								  title="View Draft" onclick={handleViewDraft} ></lightning-button> &nbsp;
+				<lightning-button variant="brand" label="Save" class="slds-p-around_xx-small" title="Save"
+								  onclick={handleOrderSave} disabled={disableSaveButton}></lightning-button> &nbsp;
+				<lightning-button variant="brand" label="Clear" class="slds-p-around_xx-small" title="Clear"
+								  onclick={handleClear}></lightning-button> &nbsp;
+				<lightning-button variant="brand" label="Add/Remove Promotion" class="slds-p-around_xx-small"
+								  title="Add Promotion" onclick={showPromotionModel}></lightning-button>
+			</div>
+
+
+			<!-- modal start -->
+			<template if:true={isShowModal}>
+				<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+						 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+					<div class="slds-modal__container">
+						<!-- modal header start -->
+						<header class="slds-modal__header">
+							<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+									title="Close" onclick={hidePromotionModel}>
+								<lightning-icon icon-name="utility:close"
+												alternative-text="close"
+												variant="inverse"
+												size="small"></lightning-icon>
+								<span class="slds-assistive-text">Close</span>
+							</button>
+							<h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Add Promotion</h2>
+						</header>
+
+						<!-- modal body start -->
+						<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+							<lightning-input type="text" value={name} data-id="name" label="Name"
+											 onchange={handleNameChange}></lightning-input>
+						</div>
+
+						<!-- modal footer start-->
+						<footer class="slds-modal__footer">
+							<lightning-button variant="brand" label="Submit"
+											  onclick={handlePromotionSubmit}></lightning-button>
+							<button class="slds-button slds-button_neutral" onclick={hidePromotionModel}>Cancel</button>
+						</footer>
+
+					</div>
+				</section>
+				<div class="slds-backdrop slds-backdrop_open"></div>
+			</template>
+			<!-- modal end -->
+
+			<!-- view draft model-->
+			<template if:true={isShowViewDraftModal}>
+				<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+						 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+					<div class="slds-modal__container">
+						<!-- modal header start -->
+						<header class="slds-modal__header">
+							<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+									title="Close" onclick={hidePromotionModel}>
+								<lightning-icon icon-name="utility:close"
+												alternative-text="close"
+												variant="inverse"
+												size="small"></lightning-icon>
+								<span class="slds-assistive-text">Close</span>
+							</button>
+							<h2 id="modal-heading3" class="slds-text-heading_medium slds-hyphenate">View Saved Order
+								Draft</h2>
+						</header>
+
+						<!-- modal body start -->
+						<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+							<template if:true={recordId}>
+								<div>
+									<div style="height: 300px;">
+										<lightning-datatable
+												key-field="Id"
+												data={viewDraftScreenData}
+												onrowselection={handleViewDraftRowSelected}
+												selected-rows={preSelectedRows}
+												columns={draftColumns} data-id="draftTable">
+										</lightning-datatable>
+									</div>
+								</div>
+							</template>
+						</div>
+
+						<!-- modal footer start-->
+						<footer class="slds-modal__footer">
+							<lightning-button variant="brand" label="Submit"
+											  onclick={handleDraftItemSelectSubmit}></lightning-button>
+							<button class="slds-button slds-button_neutral" onclick={hidePromotionModel}>Cancel</button>
+						</footer>
+
+					</div>
+				</section>
+				<div class="slds-backdrop slds-backdrop_open"></div>
+			</template>
+
+			<template if:true={isShowDraftModelName}>
+				<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+						 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+					<div class="slds-modal__container slds-modal__container">
+						<!-- modal header start -->
+						<header class="slds-modal__header">
+							<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+									title="Close" onclick={hidePromotionModel}>
+								<lightning-icon icon-name="utility:close"
+												alternative-text="close"
+												variant="inverse"
+												size="small"></lightning-icon>
+								<span class="slds-assistive-text">Close</span>
+							</button>
+							<h2 id="modal-heading" class="slds-text-heading_medium slds-hyphenate">Order Draft Name</h2>
+						</header>
+
+						<!-- modal body start -->
+						<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-3">
+							<lightning-input label="Enter an optional name to later identify this draft order."
+											 value={draftName} onchange={handleDraftName}></lightning-input>
+						</div>
+
+						<!-- modal footer start-->
+						<footer class="slds-modal__footer">
+							<lightning-button variant="brand" label="Submit"
+											  onclick={handleSaveAsDraft}></lightning-button> &nbsp;
+							<button class="slds-button slds-button_neutral" onclick={hidePromotionModel}>Cancel</button>
+						</footer>
+
+					</div>
+				</section>
+				<div class="slds-backdrop slds-backdrop_open"></div>
+
+			</template>
+		</template>
+
+		<template if:true={orderPreview}>
+
+			<!-- Order confirmation page -->
+			<div>
+				<h1>Order Confirmation</h1>
+				<br>
+				<h2>Total Including VAT: £{totalInclVat}</h2>
+				<br>
+				<h2>Total Excluding VAT: £{totalExclVat}</h2>
+			</div>
+			<br>
+			<lightning-layout>
+				<lightning-layout-item size="6">
+					<div class="slds-p-around_medium lgc-bg">
+						<lightning-input
+								type="text"
+								data-id="poRef"
+								label="PO Reference"
+								required
+								class="validate"
+								placeholder="Enter PO Reference..."
+								onchange={handleReferenceChange}>
+						</lightning-input>
+					</div>
+				</lightning-layout-item>
+				<lightning-layout-item size="6">
+					<div class="slds-p-around_medium lgc-bg">
+						<lightning-input
+								type="date"
+								data-id="estimateDate"
+								name="input5"
+								required
+								class="validate"
+								label="Estimated Delivery Date"
+								onchange={handleDateChange}>
+						</lightning-input>
+					</div>
+				</lightning-layout-item>
+			</lightning-layout>
+			<lightning-layout if:true={showPersonalisation}>
+				<lightning-layout-item size="6">
+					<div class="slds-p-around_medium lgc-bg">
+						<lightning-input
+								type="text"
+								label="Laser Text"
+								placeholder="Enter up to 20 characters"
+								onchange={handleLaserTextChange}
+								maxlength="20"
+						>
+						</lightning-input>
+					</div>
+				</lightning-layout-item>
+			</lightning-layout>
+			<br>
+			<h3>Order Summary</h3>
+			<div style="height: 300px;">
+				<lightning-datatable
+						key-field="Id"
+						data={previewProducts}
+						show-row-number-column
+						row-number-offset={rowOffset}
+						suppress-bottom-bar
+						hide-checkbox-column
+						column-widths-mode="auto"
+						class="selectedProductsTable"
+						onload={applyDtStyle}
+						errors={errors}
+						columns={previewColumns}
+						data-id="previewOrderDatatable"
+					>
+				</lightning-datatable>
+			</div>
+			<br>
+			<div style="text-align:center;">
+				<lightning-button label="Confirm Order" title="Confirm Order" onclick={handleConfirmOrder}
+								  variant="brand"></lightning-button>&nbsp;
+				<lightning-button label="Cancel Order" title="Cancel Order" onclick={handleCancelOrder}
+								  variant="brand-outline"></lightning-button>
+			</div>
+		</template>
 	</template>
 
-	<template if:true={isShowDraftModelName}>
-		<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01"  aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
-			<div class="slds-modal__container slds-modal__container">
-				<!-- modal header start -->
-				<header class="slds-modal__header">
-					<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={hidePromotionModel}>
-						<lightning-icon icon-name="utility:close"
-										alternative-text="close"
-										variant="inverse"
-										size="small" ></lightning-icon>
-						<span class="slds-assistive-text">Close</span>
-					</button>
-					<h2 id="modal-heading" class="slds-text-heading_medium slds-hyphenate">Order Draft Name</h2>
-				</header>
-
-				<!-- modal body start -->
-				<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-3">
-					<lightning-input label="Enter an optional name to later identify this draft order."  value={draftName} onchange={handleDraftName}></lightning-input>
-				</div>
-
-				<!-- modal footer start-->
-				<footer class="slds-modal__footer">
-					<lightning-button  variant="brand" label="Submit" onclick={handleSaveAsDraft} ></lightning-button> &nbsp;
-					<button class="slds-button slds-button_neutral" onclick={hidePromotionModel}>Cancel</button>
-				</footer>
-
-			</div>
-		</section>
-		<div class="slds-backdrop slds-backdrop_open"></div>
-
+	<template lwc:elseif={canShowPromotion}>
+ 	<c-promotion record-id={recordId} p-selected-promotion={promotionToEdit} order-draft-values={masterDraftValues}></c-promotion>
 	</template>
-</template>
-
-
-<template if:true={orderPreview}>
-
-<!-- Order confirmation page -->
-	<div>
-		<h1>Order Confirmation</h1>
-		<br>
-		<h2>Total Including VAT: £{totalInclVat}</h2>
-		<br>
-		<h2>Total Excluding VAT: £{totalExclVat}</h2>
-	</div>
-	<br>
-	<lightning-layout>
-			<lightning-layout-item size="6">
-				<div class="slds-p-around_medium lgc-bg">
-					<lightning-input 
-						type="text" 
-						label="PO Reference" 
-						placeholder="Enter PO Reference..."
-						onchange={handleReferenceChange}>
-					</lightning-input>
-				</div>
-			</lightning-layout-item>
-			<lightning-layout-item size="6">
-				<div class="slds-p-around_medium lgc-bg">
-					<lightning-input 
-						type="date" 
-						name="input5" 
-						label="Estimated Delivery Date"
-						onchange={handleDateChange}>
-					</lightning-input>
-				</div>
-			</lightning-layout-item>
-	</lightning-layout>
-	<lightning-layout if:true={showPersonalisation}>
-		<lightning-layout-item size="6">
-			<div class="slds-p-around_medium lgc-bg">
-				<lightning-input 
-					type="text" 
-					label="Laser Text" 
-					placeholder="Enter up to 20 characters"
-					onchange={handleLaserTextChange}
-					maxlength="20"
-				>
-				</lightning-input>
-			</div>
-		</lightning-layout-item>
-	</lightning-layout>
-	<br>
-	<h3>Order Summary</h3>
-	<div style="height: 300px;">
-		<lightning-datatable
-				key-field="Id"
-				data={selectedProducts}
-				show-row-number-column
-				row-number-offset={rowOffset}
-				suppress-bottom-bar
-				hide-checkbox-column
-				column-widths-mode="auto"
-				class="selectedProductsTable"
-				onload={applyDtStyle}
-				errors={errors}
-				columns={columns}>
-		</lightning-datatable>
-	</div>
-	<br>
-	<div style="text-align:center;">
-		<lightning-button   label="Confirm Order" title="Confirm Order" onclick={handleConfirmOrder} variant="brand" ></lightning-button>&nbsp;
-		<lightning-button   label="Cancel Order" title="Cancel Order" onclick={handleCancelOrder} variant="brand-outline" ></lightning-button>
-	</div>
-</template>
 </template>
